@@ -11,7 +11,9 @@ import android.view.SurfaceHolder
 import android.view.View
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.room.Room
 import com.example.travellerapp.databinding.ActivityMainBinding
+import com.example.travellerapp.model.Note
 
 
 class MainActivity : AppCompatActivity(), SurfaceHolder.Callback {
@@ -19,6 +21,7 @@ class MainActivity : AppCompatActivity(), SurfaceHolder.Callback {
     val cam by lazy {CameraUtil(getSystemService(Context.CAMERA_SERVICE) as CameraManager)}
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Shared.db = Room.databaseBuilder(this, AppDataBase::class.java,"notedb").build()
 
         setContentView(binding.root)
         binding.surfaceView.holder.addCallback(this)
@@ -26,6 +29,16 @@ class MainActivity : AppCompatActivity(), SurfaceHolder.Callback {
 
     override fun onResume() {
         super.onResume()
+        /*Shared.db?.note?.getAll().let{
+            val newList = it?.map{
+                Note(
+                    it.id,
+                    it.text,
+                    it.image,
+                    it.localization
+                )
+            }
+        }*/
         cam.openCamera()
     }
 
