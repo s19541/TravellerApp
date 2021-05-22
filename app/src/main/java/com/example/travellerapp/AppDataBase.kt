@@ -2,11 +2,11 @@ package com.example.travellerapp
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
-import com.example.travellerapp.model.Note
+import com.example.travellerapp.model.NoteDto
 
 @Database(
     entities = [
-        Note::class
+        NoteDto::class
     ],
     version = 1
 )

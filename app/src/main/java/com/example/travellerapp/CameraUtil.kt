@@ -113,8 +113,12 @@ class CameraUtil(val cameraManager: CameraManager): CameraDevice.StateCallback()
                 StateCallbackForAcquire(imageReader, iv),
                 handler
         )
-        Thread.sleep(100)
-        return imageReader.acquireNextImage()
+        while(true){
+            try {
+                val image = imageReader.acquireNextImage()
+                return image
+            }catch(e:Exception){}
+        }
     }
 
     override fun onDisconnected(camera: CameraDevice) {

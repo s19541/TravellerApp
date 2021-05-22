@@ -1,23 +1,34 @@
 package com.example.travellerapp
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.ContextWrapper
 import android.graphics.*
 import android.graphics.Paint.Align
+import android.location.Criteria
+import android.location.Geocoder
+import android.location.LocationListener
+import android.location.LocationManager
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.example.travellerapp.databinding.ActivityPhotoBinding
+import com.example.travellerapp.model.NoteDto
 import java.io.File
 import java.io.FileOutputStream
+import java.text.DecimalFormat
 import java.text.SimpleDateFormat
-import java.time.LocalDateTime
 import java.util.*
+import kotlin.concurrent.thread
 
 
+@SuppressLint("SetTextI18n", "MissingPermission")
 class PhotoActivity : AppCompatActivity() {
     val binding by lazy { ActivityPhotoBinding.inflate(layoutInflater)}
     var bitmapImage : Bitmap ?= null
+    var lat: Double = 0.0
+    var lng: Double = 0.0
+    private val locman by lazy { getSystemService(LocationManager::class.java) }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
@@ -27,8 +38,38 @@ class PhotoActivity : AppCompatActivity() {
         val calendar = Calendar.getInstance()
         val dateFormat = SimpleDateFormat("MM/dd/yyyy")
         val date = dateFormat.format(calendar.time)
+        var text = "$date "
 
-        val text = date
+        val criteria = Criteria().apply {
+            accuracy = Criteria.ACCURACY_FINE
+        }
+        val best = locman.getBestProvider(criteria, true) ?: ""
+        locman.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 0f, LocationListener { });
+        val loc = locman.getLastKnownLocation(best)
+
+            if (loc != null ) {
+                lat = loc.latitude
+                lng = loc.longitude
+                println(lat)
+                println(lng)
+                try {
+                    if (Geocoder.isPresent()) {
+                        text += Geocoder(this)
+                                .getFromLocation(lat, lng, 1)
+                                .first()
+                                .locality
+                        text += " "
+                        text += Geocoder(this)
+                                .getFromLocation(lat, lng, 1)
+                                .first()
+                                .countryName
+                        println(text)
+                    }
+                }catch (e: java.lang.Exception){
+                    println(e.message)}
+            }
+
+
         val paint = Paint()
         //paint.style = Paint.Style.FILL
         paint.color = Shared.textColor
@@ -62,6 +103,15 @@ class PhotoActivity : AppCompatActivity() {
             bitmapImage?.compress(Bitmap.CompressFormat.JPEG, 100, fos)
             fos.close()
         } catch (e: Exception) { }
+        val note = NoteDto(
+            text = binding.editNote.text.toString(),
+            image = mypath.toString(),
+            latitude = lat,
+            longitude = lng
+        )
+        thread {
+            Shared.db?.note?.save(note)
+        }
         finish()
     }
     fun returnPressed(view: View){

@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.SeekBar
+import android.widget.Toast
 import androidx.core.graphics.blue
 import androidx.core.graphics.green
 import androidx.core.graphics.red
@@ -54,6 +55,10 @@ class PreferencesActivity : AppCompatActivity() {
         binding.colorView.setColorFilter(color)
     }
     fun savePreferencesPressed(view: View){
+        if(binding.editTextSize.text.toString().toIntOrNull() == null || binding.editLocationRadius.text.toString().toIntOrNull() == null){
+            Toast.makeText(this, "Nie wypełniono wszyskich pól", Toast.LENGTH_LONG).show()
+            return
+        }
         Shared.textSize = binding.editTextSize.text.toString().toInt()
         Shared.textColor = color
         Shared.locationRadius = binding.editLocationRadius.text.toString().toInt()
