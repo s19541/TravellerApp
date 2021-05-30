@@ -16,9 +16,6 @@
         android:theme="@style/Theme.TravellerApp">
         <activity android:name=".GalleryActivity"></activity>
         <activity android:name=".PreferencesActivity" />
-        <activity
-            android:name=".SettingsActivity"
-            android:label="@string/title_activity_settings" />
         <activity android:name=".PhotoActivity" />
         <activity android:name=".MainActivity">
             <intent-filter>

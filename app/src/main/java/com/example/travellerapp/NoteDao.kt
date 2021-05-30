@@ -13,4 +13,7 @@ interface NoteDao {
 
     @Query("SELECT * FROM NoteDto;")
     fun getAll() : List<NoteDto>
+
+    @Query("DELETE FROM NoteDto WHERE image LIKE :image;")
+    fun deleteNote(image: String)
 }

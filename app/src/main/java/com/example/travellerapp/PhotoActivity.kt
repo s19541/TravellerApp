@@ -50,8 +50,6 @@ class PhotoActivity : AppCompatActivity() {
             if (loc != null ) {
                 lat = loc.latitude
                 lng = loc.longitude
-                println(lat)
-                println(lng)
                 try {
                     if (Geocoder.isPresent()) {
                         text += Geocoder(this)
@@ -63,7 +61,6 @@ class PhotoActivity : AppCompatActivity() {
                                 .getFromLocation(lat, lng, 1)
                                 .first()
                                 .countryName
-                        println(text)
                     }
                 }catch (e: java.lang.Exception){
                     println(e.message)}
@@ -96,7 +93,6 @@ class PhotoActivity : AppCompatActivity() {
         }
         val calendar = Calendar.getInstance()
         val mypath = File(directory, "photo" + calendar.timeInMillis + ".png")
-        println(mypath)
         var fos: FileOutputStream
         try {
             fos = FileOutputStream(mypath)

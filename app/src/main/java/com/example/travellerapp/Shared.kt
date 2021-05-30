@@ -8,5 +8,5 @@ object Shared {
     var db: AppDataBase? = null
     var textSize: Int = 15
     var textColor: Int = Color.rgb(0,0,0)
-    var locationRadius: Int = 100
+    var locationRadius: Int = 1000
 }

@@ -45,4 +45,7 @@ class GalleryActivity : AppCompatActivity() {
             photoNumber--
         updateImage()
     }
+    fun returnPressed(view: View){
+        finish()
+    }
 }
