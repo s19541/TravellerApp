@@ -1,8 +1,11 @@
 package com.example.travellerapp
 
+import android.Manifest
+import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.ContextWrapper
+import android.content.pm.PackageManager
 import android.graphics.*
 import android.graphics.Paint.Align
 import android.location.Criteria
@@ -43,28 +46,35 @@ class PhotoActivity : AppCompatActivity() {
         val criteria = Criteria().apply {
             accuracy = Criteria.ACCURACY_FINE
         }
-        val best = locman.getBestProvider(criteria, true) ?: ""
-        locman.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 0f, LocationListener { });
-        val loc = locman.getLastKnownLocation(best)
+        if(checkSelfPermission(ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            val best = locman.getBestProvider(criteria, true) ?: ""
+            locman.requestLocationUpdates(
+                LocationManager.GPS_PROVIDER,
+                1000,
+                0f,
+                LocationListener { })
+            val loc = locman.getLastKnownLocation(best)
 
-            if (loc != null ) {
+            if (loc != null) {
                 lat = loc.latitude
                 lng = loc.longitude
                 try {
                     if (Geocoder.isPresent()) {
                         text += Geocoder(this)
-                                .getFromLocation(lat, lng, 1)
-                                .first()
-                                .locality
+                            .getFromLocation(lat, lng, 1)
+                            .first()
+                            .locality
                         text += " "
                         text += Geocoder(this)
-                                .getFromLocation(lat, lng, 1)
-                                .first()
-                                .countryName
+                            .getFromLocation(lat, lng, 1)
+                            .first()
+                            .countryName
                     }
-                }catch (e: java.lang.Exception){
-                    println(e.message)}
+                } catch (e: java.lang.Exception) {
+                    println(e.message)
+                }
             }
+        }
 
 
         val paint = Paint()

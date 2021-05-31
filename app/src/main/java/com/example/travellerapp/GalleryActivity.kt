@@ -1,5 +1,6 @@
 package com.example.travellerapp
 
+import android.content.Intent
 import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.view.View
@@ -25,11 +26,16 @@ class GalleryActivity : AppCompatActivity() {
             fis = FileInputStream(File(Shared.noteList[photoNumber].image))
             val bitmap = BitmapFactory.decodeStream(fis)
             binding.imageView.setImageBitmap(bitmap)
+
+            binding.imageView.setOnClickListener{
+                val photoWithNoteIntent = Intent(binding.root.context, PhotoWithNoteActivity::class.java)
+                photoWithNoteIntent.putExtra("note",Shared.noteList[photoNumber].text)
+                photoWithNoteIntent.putExtra("photo",bitmap)
+                photoWithNoteIntent.putExtra("fromNotification",false)
+                startActivity(photoWithNoteIntent)
+            }
             fis.close()
         } catch (e: Exception) { }
-        binding.imageView.setOnClickListener{
-            Toast.makeText(this, Shared.noteList[photoNumber].text, Toast.LENGTH_LONG).show()
-        }
     }
     fun nextPhoto(view: View){
         if(photoNumber == Shared.noteList.size-1)

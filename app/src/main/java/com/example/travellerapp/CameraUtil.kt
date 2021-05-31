@@ -43,21 +43,6 @@ class CameraUtil(val cameraManager: CameraManager): CameraDevice.StateCallback()
     inner class StateCallbackForAcquire(val imageReader: ImageReader, imageView: ImageView)
         : CameraCaptureSession.StateCallback() {
 
-        /*init {
-            imageReader.setOnImageAvailableListener({
-                val img = it.acquireLatestImage()
-                //val buffer = img.planes[0].buffer
-                //val bytes = ByteArray(buffer.capacity())
-                //buffer.get(bytes)
-               /* val bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
-                imageView.post {
-                    imageView.setImageBitmap(bitmap)
-                }*/
-                it.close()
-                //surface?.let { setupPreviewSession(it) }
-            }, handler)
-        }*/
-
         override fun onConfigureFailed(session: CameraCaptureSession) {}
 
         override fun onConfigured(session: CameraCaptureSession) {
