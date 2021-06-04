@@ -16,11 +16,9 @@ import java.io.FileInputStream
 
 class LocationReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context?, intent: Intent?) {
-        println("receiver")
         val event = intent?.let {
             GeofencingEvent.fromIntent(it)
         }
-        println(event?.triggeringGeofences?.size)
         val image = event?.triggeringGeofences?.first()?.requestId
 
         var fis: FileInputStream
