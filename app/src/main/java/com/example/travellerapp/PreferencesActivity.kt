@@ -1,5 +1,6 @@
 package com.example.travellerapp
 
+import android.content.Context
 import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -16,6 +17,7 @@ import java.security.AccessController.getContext
 class PreferencesActivity : AppCompatActivity() {
     val binding by lazy { ActivityPreferencesBinding.inflate(layoutInflater)}
     var color = Color.rgb(0,0,0)
+    private val prefs by lazy {getSharedPreferences("prefs", Context.MODE_PRIVATE)}
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
@@ -62,6 +64,13 @@ class PreferencesActivity : AppCompatActivity() {
         Shared.textSize = binding.editTextSize.text.toString().toInt()
         Shared.textColor = color
         Shared.locationRadius = binding.editLocationRadius.text.toString().toInt()
+
+        prefs.edit()
+            .putInt("textSize", Shared.textSize)
+            .putInt("textColor", Shared.textColor)
+            .putInt("locationRadius", Shared.locationRadius)
+            .apply()
+
         finish()
     }
 }

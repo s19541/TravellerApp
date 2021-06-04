@@ -5,13 +5,11 @@ import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
+import android.content.*
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Color
 import android.graphics.Matrix
 import android.hardware.camera2.CameraManager
 import android.location.LocationListener
@@ -32,6 +30,7 @@ import com.example.travellerapp.model.NoteDto
 import com.google.android.gms.location.*
 import java.io.File
 import java.io.FileInputStream
+import java.util.*
 import kotlin.concurrent.thread
 
 private const val REQ_LOCATION_PERMISSION = 1
@@ -39,15 +38,24 @@ class MainActivity : AppCompatActivity(), SurfaceHolder.Callback {
     val binding by lazy { ActivityMainBinding.inflate(layoutInflater)}
     val cam by lazy {CameraUtil(getSystemService(Context.CAMERA_SERVICE) as CameraManager)}
     private val locman by lazy { getSystemService(LocationManager::class.java)}
+    private val prefs by lazy {getSharedPreferences("prefs", Context.MODE_PRIVATE)}
     @RequiresApi(Build.VERSION_CODES.Q)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        binding.takePhotoButton.isClickable = false
+        println()
+        checkPermission()
         Shared.db = Room.databaseBuilder(this, AppDataBase::class.java, "notedb").build()
         registerChannel()
+        loadPreferences()
 
         setContentView(binding.root)
-        checkPermission()
         binding.surfaceView.holder.addCallback(this)
+    }
+    private fun loadPreferences(){
+        Shared.textSize = prefs.getInt("textSize", 15)
+        Shared.textColor = prefs.getInt("textColor", Color.rgb(0,255,255))
+        Shared.locationRadius = prefs.getInt("locationRadius", 1000)
     }
     private fun registerChannel() {
         getSystemService(NotificationManager::class.java).let {
@@ -91,7 +99,10 @@ class MainActivity : AppCompatActivity(), SurfaceHolder.Callback {
                 }
             }
         }
-        cam.openCamera()
+        if(checkSelfPermission(CAMERA) == PackageManager.PERMISSION_GRANTED) {
+            cam.openCamera()
+            binding.takePhotoButton.isClickable = true
+        }
     }
     @SuppressLint("MissingPermission")
     fun addGeoFence(note: NoteDto){
@@ -167,10 +178,17 @@ class MainActivity : AppCompatActivity(), SurfaceHolder.Callback {
         val permissionStatusLocation = checkSelfPermission(ACCESS_FINE_LOCATION)
         val permissionStatusBackgroundLocation = checkSelfPermission(ACCESS_BACKGROUND_LOCATION)
         if(permissionStatusLocation != PackageManager.PERMISSION_GRANTED){
-            requestPermissions(arrayOf(ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION), REQ_LOCATION_PERMISSION)
+            requestPermissions(arrayOf(ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION, ACCESS_BACKGROUND_LOCATION), REQ_LOCATION_PERMISSION)
         }
         if(permissionStatusBackgroundLocation != PackageManager.PERMISSION_GRANTED){
             requestPermissions(arrayOf(ACCESS_BACKGROUND_LOCATION), REQ_LOCATION_PERMISSION)
+        }
+    }
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        if (requestCode == 3) {
+            if (!listOf(grantResults).contains(PackageManager.PERMISSION_DENIED)) {
+                this.recreate()
+            }
         }
     }
 }
